@@ -1,22 +1,31 @@
 # Dependencies
-/node_modules
+node_modules/
+uploads/
 
-# Environment Variables
+# Environment variables
 .env
 .env.local
 
-# Compiled TypeScript files (if applicable)
-/dist
-/build
+# Build output
+dist/
+build/
 
-# Logs and databases
+# Logs & coverage
 *.log
-*.sqlite
-/coverage
+coverage/
 
-# Operating System files
+# Databases
+*.sqlite
+data/
+*.bson
+
+# Temp files
+tmp/
+temp/
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# Optional: IDE-specific files (e.g., VS Code)
+# IDEs
 .vscode/
