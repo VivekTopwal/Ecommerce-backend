@@ -1,0 +1,22 @@
+# Dependencies
+/node_modules
+
+# Environment Variables
+.env
+.env.local
+
+# Compiled TypeScript files (if applicable)
+/dist
+/build
+
+# Logs and databases
+*.log
+*.sqlite
+/coverage
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Optional: IDE-specific files (e.g., VS Code)
+.vscode/
