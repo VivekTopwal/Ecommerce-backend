@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 
 export const addProduct = async (req, res) => {
+  
   try {
     const { name, description, category, productPrice, salePrice, quantity } =
       req.body;
@@ -49,7 +50,7 @@ export const getAllProducts = async (req, res) => {
   try {
     
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 2;
+    const limit = Number(req.query.limit) || 100;
 
     const products = await Product.paginate(
       {},
@@ -121,7 +122,6 @@ export const togglePublish = async (req, res) => {
 
     product.isPublished = !product.isPublished;
     await product.save();
-
     res.json({
       message: "Publish status updated",
       isPublished: product.isPublished,

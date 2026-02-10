@@ -221,6 +221,8 @@ export const toggleCategoryPublish = async (req, res) => {
     category.isPublished = !category.isPublished;
     await category.save();
 
+    console.log("New publish status:", category.isPublished);
+
     res.json({
       success: true,
       message: "Publish status updated",

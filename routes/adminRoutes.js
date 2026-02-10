@@ -14,6 +14,7 @@ router.post("/add-product", upload.fields([
     { name: "mainImage", maxCount: 1 },
     { name: "featureImages", maxCount: 5 },
 ]), addProduct);
+
 router.get("/products", getAllProducts);
 router.get('/products/:slug', getProductBySlug);
 router.get('/admin/products/:slug', getProductBySlug);
@@ -24,9 +25,8 @@ router.put("/products/:id", upload.fields([
     { name: "mainImage", maxCount: 1 },
     { name: "featureImages", maxCount: 5 },
 ]), updateProduct);
+
 router.patch("/products/:id/publish", togglePublish);
-
-
 
 router.post("/add-category", upload.single("icon"), addCategory);
 

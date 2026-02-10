@@ -5,6 +5,9 @@ import Product from "../models/Product.js";
 export const createOrder = async (req, res) => {
   try {
     const {
+      sessionId,
+      items,
+      isBuyNow,
       customerInfo,
       shippingAddress,
       billingAddress,
@@ -21,46 +24,79 @@ export const createOrder = async (req, res) => {
     }
 
     const userId = req.user._id;
-    let cart = await Cart.findOne({ user: userId }).populate("items.product");
+    let orderItems = [];
+    let itemsPrice = 0;
 
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Cart is empty",
-      });
-    }
+    if (isBuyNow && items && items.length > 0) {
+      for (const item of items) {
+        const product = await Product.findById(item.product._id);
+        
+        if (!product) {
+          return res.status(404).json({
+            success: false,
+            message: `Product not found`,
+          });
+        }
+        
+        if (product.quantity < item.quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Insufficient stock for ${product.name}`,
+          });
+        }
 
-    for (const item of cart.items) {
-      const product = await Product.findById(item.product._id);
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: `Product ${item.product.name} not found`,
+        orderItems.push({
+          product: product._id,
+          name: product.name,
+          quantity: item.quantity,
+          price: item.salePrice,
+          image: product.mainImage,
         });
+
+        itemsPrice += item.salePrice * item.quantity;
       }
-      if (product.quantity < item.quantity) {
+    } else {
+      const cart = await Cart.findOne({ user: userId }).populate("items.product");
+
+      if (!cart || cart.items.length === 0) {
         return res.status(400).json({
           success: false,
-          message: `Insufficient stock for ${product.name}. Available: ${product.quantity}, Requested: ${item.quantity}`,
+          message: "Cart is empty",
         });
       }
+
+      for (const item of cart.items) {
+        const product = await Product.findById(item.product._id);
+        if (!product) {
+          return res.status(404).json({
+            success: false,
+            message: `Product ${item.product.name} not found`,
+          });
+        }
+        if (product.quantity < item.quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Insufficient stock for ${product.name}. Available: ${product.quantity}, Requested: ${item.quantity}`,
+          });
+        }
+      }
+
+      orderItems = cart.items.map((item) => ({
+        product: item.product._id,
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.salePrice,
+        image: item.product.mainImage,
+      }));
+
+      itemsPrice = cart.totalAmount;
     }
 
-
-    const itemsPrice = cart.totalAmount;
-    const shippingPrice = itemsPrice > 500 ? 0 : 50; 
-    const taxPrice = Number((itemsPrice * 0.1).toFixed(2)); 
+    const shippingPrice = itemsPrice > 500 ? 0 : 50;
+    const taxPrice = Number((itemsPrice * 0.1).toFixed(2));
     const totalPrice = Number((itemsPrice + shippingPrice + taxPrice).toFixed(2));
 
-    const orderItems = cart.items.map((item) => ({
-      product: item.product._id,
-      name: item.product.name,
-      quantity: item.quantity,
-      price: item.salePrice,
-      image: item.product.mainImage,
-    }));
-
-
+    // Create order
     const order = new Order({
       user: userId,
       items: orderItems,
@@ -79,10 +115,9 @@ export const createOrder = async (req, res) => {
 
     await order.save();
 
-
-    for (const item of cart.items) {
+    for (const item of orderItems) {
       await Product.findByIdAndUpdate(
-        item.product._id,
+        item.product,
         {
           $inc: { quantity: -item.quantity },
         },
@@ -90,10 +125,15 @@ export const createOrder = async (req, res) => {
       );
     }
 
-    cart.items = [];
-    cart.totalAmount = 0;
-    cart.totalItems = 0;
-    await cart.save();
+    if (!isBuyNow) {
+      const cart = await Cart.findOne({ user: userId });
+      if (cart) {
+        cart.items = [];
+        cart.totalAmount = 0;
+        cart.totalItems = 0;
+        await cart.save();
+      }
+    }
 
     res.status(201).json({
       success: true,
