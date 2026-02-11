@@ -30,6 +30,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       unique: true,
       required: true,
+      default: () => `ORD-${Date.now()}`
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -142,14 +143,6 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-orderSchema.pre("save", async function (next) {
-  if (!this.orderNumber) {
-    const count = await mongoose.model("Order").countDocuments();
-    this.orderNumber = `ORD-${Date.now()}-${(count + 1).toString().padStart(5, "0")}`;
-  }
-  next();
-});
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;
