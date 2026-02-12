@@ -174,23 +174,49 @@ export const deleteCustomer = async (req, res) => {
   }
 };
 
-export const bulkDeleteCustomers = async (req, res) => {
+export const updateCustomer = async (req, res) => {
   try {
-    const { ids } = req.body;
+    const { firstName, lastName, email, phone, role, isActive } = req.body;
 
-    if (!ids || ids.length === 0) {
+    const customer = await User.findById(req.params.id);
+
+    if (!customer) {
       return res
-        .status(400)
-        .json({ success: false, message: "No customer IDs provided" });
+        .status(404)
+        .json({ success: false, message: "Customer not found" });
+    }
+    if (email && email !== customer.email) {
+      const existingUser = await User.findOne({
+        email: email.toLowerCase().trim(),
+      });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Email already in use",
+        });
+      }
     }
 
-    await User.deleteMany({ _id: { $in: ids }, role: "user" });
+    const updatedCustomer = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        firstName: firstName || customer.firstName,
+        lastName: lastName || customer.lastName,
+        email: email ? email.toLowerCase().trim() : customer.email,
+        phone: phone !== undefined ? phone : customer.phone,
+        role: role || customer.role,
+        isActive: isActive !== undefined ? isActive : customer.isActive,
+      },
+      { new: true, runValidators: true }
+    );
 
     res.json({
       success: true,
-      message: `${ids.length} customer(s) deleted successfully`,
+      message: "Customer updated successfully",
+      customer: updatedCustomer,
     });
   } catch (error) {
+    console.error("Error updating customer:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -4,7 +4,7 @@ import { addProduct, getAllProducts, getProductBySlug, deleteProduct, togglePubl
 import { addCategory, getAllCategories, getCategoryBySlug, getCategoryById, deleteCategory, toggleCategoryPublish, updateCategory, getPublicCategories } from "../controllers/categoryController.js";
 import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 import { getAllOrders, getOrderById, updateOrderStatus, } from "../controllers/orderController.js";
-import { getAllCustomers, getCustomerById, toggleCustomerStatus, deleteCustomer, bulkDeleteCustomers, } from "../controllers/customerController.js";
+import { getAllCustomers, getCustomerById, toggleCustomerStatus, deleteCustomer, updateCustomer, } from "../controllers/customerController.js";
 
 const router = express.Router();
 
@@ -55,7 +55,7 @@ router.get("/customers/:id", getCustomerById);
 
 router.patch("/customers/:id/toggle-status", toggleCustomerStatus);
 
-router.delete("/customers/bulk-delete", bulkDeleteCustomers);
+router.put("/customers/:id", updateCustomer);
 
 router.delete("/customers/:id", deleteCustomer);
 
