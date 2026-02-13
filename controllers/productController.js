@@ -80,22 +80,24 @@ export const getAllProducts = async (req, res) => {
 
 export const getProductBySlug = async (req, res) => {
   try {
-    const { slug } = req.params;
-    
-    const product = await Product.findOne({ slug });
-    
+    const product = await Product.findOne({ 
+      slug: req.params.slug,
+      isPublished: true 
+    });
+
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found"
+        message: "Product not found",
       });
     }
-    
-    res.status(200).json({
+
+    res.json({
       success: true,
       product,
     });
   } catch (error) {
+    console.error("Error fetching product:", error);
     res.status(500).json({
       success: false,
       message: error.message,

@@ -14,7 +14,6 @@ router.get("/categories", getPublicCategories);
 
 router.get("/categories/slug/:slug", getCategoryBySlug);
 
-// router.get("/products", getAllProducts);
 router.get("/products", getPublicProducts);
 
 router.get("/products/:slug", getProductBySlug);

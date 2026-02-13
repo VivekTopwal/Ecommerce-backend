@@ -173,28 +173,6 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-// export const getOrderById = async (req, res) => {
-//   try {
-//     const order = await Order.findById(req.params.id).populate("items.product");
-
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found",
-//       });
-//     }
-
-//     res.json({
-//       success: true,
-//       order,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
 
 export const getOrderByNumber = async (req, res) => {
   try {
@@ -212,30 +190,6 @@ export const getOrderByNumber = async (req, res) => {
   }
 };
 
-// export const getOrderByNumber = async (req, res) => {
-//   try {
-//     const { orderNumber } = req.params;
-//     const order = await Order.findOne({ orderNumber }).populate("items.product");
-
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found",
-//       });
-//     }
-
-//     res.json({
-//       success: true,
-//       order,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
 export const getUserOrders = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -246,33 +200,6 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
-// export const getUserOrders = async (req, res) => {
-//   try {
-//     const { sessionId } = req.query;
-//     const userId = req.user?._id;
-
-//     let query = {};
-//     if (userId) {
-//       query.user = userId;
-//     } else if (sessionId) {
-//       query.sessionId = sessionId;
-//     }
-
-//     const orders = await Order.find(query)
-//       .populate("items.product")
-//       .sort({ createdAt: -1 });
-
-//     res.json({
-//       success: true,
-//       orders,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
 
 export const getAllOrders = async (req, res) => {
  try {
@@ -370,60 +297,8 @@ export const getAllOrders = async (req, res) => {
     console.error("Error fetching orders:", error);
     res.status(500).json({ success: false, message: error.message });
   }
-  // try {
-  //   const page = parseInt(req.query.page) || 1;
-  //   const limit = parseInt(req.query.limit) || 10;
-  //   const skip = (page - 1) * limit;
-
-  //   const totalDocs = await Order.countDocuments();
-  //   const orders = await Order.find()
-  //     .populate("items.product")
-  //     .sort({ createdAt: -1 })
-  //     .skip(skip)
-  //     .limit(limit);
-
-  //   const totalPages = Math.ceil(totalDocs / limit);
-
-  //   res.json({
-  //     success: true,
-  //     orders,
-  //     pagination: {
-  //       totalDocs,
-  //       totalPages,
-  //       page,
-  //       limit,
-  //       hasNextPage: page < totalPages,
-  //       hasPrevPage: page > 1,
-  //     },
-  //   });
-  // } catch (error) {
-  //   res.status(500).json({
-  //     success: false,
-  //     message: error.message,
-  //   });
-  // }
 };
 
-// export const updateOrderStatus = async (req, res) => {
-//   try {
-//     const { status, paymentStatus } = req.body;
-
-//     const order = await Order.findById(req.params.id);
-
-//     if (!order) {
-//       return res.status(404).json({ success: false, message: "Order not found" });
-//     }
-
-//     if (status) order.status = status;
-//     if (paymentStatus) order.paymentStatus = paymentStatus;
-
-//     await order.save();
-
-//     res.json({ success: true, message: "Order status updated", order });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 
 export const updateOrderStatus = async (req, res) => {
   try {
@@ -467,7 +342,6 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-
 export const cancelOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -497,45 +371,4 @@ export const cancelOrder = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-
-// export const cancelOrder = async (req, res) => {
-//   try {
-//     const order = await Order.findById(req.params.id);
-
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found",
-//       });
-//     }
-
-//     if (order.orderStatus === "delivered") {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Cannot cancel delivered order",
-//       });
-//     }
-
-//     for (const item of order.items) {
-//       await Product.findByIdAndUpdate(item.product, {
-//         $inc: { quantity: item.quantity },
-//       });
-//     }
-
-//     order.orderStatus = "cancelled";
-//     await order.save();
-
-//     res.json({
-//       success: true,
-//       message: "Order cancelled successfully",
-//       order,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
 
