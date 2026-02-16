@@ -131,7 +131,6 @@ export const login = async (req, res) => {
 
 export const adminLogin = async (req, res) => {
   try {
-    console.log("🔐 Admin login attempt:", req.body);
     
     const { email, password } = req.body;
 
@@ -166,7 +165,7 @@ export const adminLogin = async (req, res) => {
     }
 
     const token = generateToken(user._id);
-    console.log("✅ Admin login successful");
+  
 
     res.json({
       success: true,
