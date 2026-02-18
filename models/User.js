@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+
     addresses: [
       {
         address: String,
@@ -66,15 +70,9 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
 
-userSchema.methods.toJSON = function () {
-  const user = this.toObject();
-  delete user.password;
-  return user;
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
 };
-
 const User = mongoose.model("User", userSchema);
 export default User;

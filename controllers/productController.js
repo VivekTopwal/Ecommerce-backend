@@ -1,7 +1,7 @@
 import Product from "../models/Product.js";
 
 export const addProduct = async (req, res) => {
-  
+
   try {
     const { name, description, category, productPrice, salePrice, quantity } =
       req.body;
@@ -14,9 +14,9 @@ export const addProduct = async (req, res) => {
 
     const featureImages = req.files.featureImages
       ? req.files.featureImages.map(
-          (file) =>
-            `${process.env.BACKEND_URL}/uploads/products/${file.filename}`
-        )
+        (file) =>
+          `${process.env.BACKEND_URL}/uploads/products/${file.filename}`
+      )
       : [];
 
     const product = new Product({
@@ -48,7 +48,7 @@ export const addProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    
+
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 100;
 
@@ -62,9 +62,9 @@ export const getAllProducts = async (req, res) => {
     );
 
     res.status(200).json({
-        success: true,
-        products: products.docs,
-        pagination: {
+      success: true,
+      products: products.docs,
+      pagination: {
         totalDocs: products.totalDocs,
         totalPages: products.totalPages,
         page: products.page,
@@ -80,9 +80,9 @@ export const getAllProducts = async (req, res) => {
 
 export const getProductBySlug = async (req, res) => {
   try {
-    const product = await Product.findOne({ 
+    const product = await Product.findOne({
       slug: req.params.slug,
-      isPublished: true 
+      isPublished: true
     });
 
     if (!product) {
@@ -133,21 +133,41 @@ export const togglePublish = async (req, res) => {
   }
 };
 
+
 export const getPublicProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isPublished: true })
+    const { search, category } = req.query;
+    const query = { isPublished: true };
+
+        if (category && category !== "all") {
+      const categories = category.split(",").map((c) => c.trim());
+      query.category = categories.length === 1
+        ? categories[0]
+        : { $in: categories };
+    }
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const products = await Product.find(query)
       .sort({ createdAt: -1 });
 
     res.json(products);
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const updateData = {
       name: req.body.name,
       description: req.body.description,
@@ -157,10 +177,10 @@ export const updateProduct = async (req, res) => {
       quantity: req.body.quantity,
     };
 
- 
-if (req.files?.mainImage?.[0]) {
-  updateData.mainImage = `${process.env.BACKEND_URL}/uploads/products/${req.files.mainImage[0].filename}`;
-}
+
+    if (req.files?.mainImage?.[0]) {
+      updateData.mainImage = `${process.env.BACKEND_URL}/uploads/products/${req.files.mainImage[0].filename}`;
+    }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -169,9 +189,9 @@ if (req.files?.mainImage?.[0]) {
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Product not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
       });
     }
 
@@ -182,9 +202,9 @@ if (req.files?.mainImage?.[0]) {
     });
   } catch (error) {
     console.error("Error updating product:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 };
