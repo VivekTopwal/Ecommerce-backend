@@ -1,6 +1,13 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
+
+
+import { Resend } from "resend";
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const createOrder = async (req, res) => {
   try {
@@ -372,3 +379,76 @@ export const cancelOrder = async (req, res) => {
   }
 };
 
+// const sendWelcomeEmail = async (email, firstName, password) => {
+//   try {
+//     await resend.emails.send({
+//       from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM}>`,
+//       to: email,
+//       subject: "Your Account Has Been Created",
+//       html: `
+//         <!DOCTYPE html>
+//         <html>
+//           <head>
+//             <meta charset="utf-8">
+//             <style>
+//               body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+//               .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+//               .header { background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+//               .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+//               .credentials { background: white; border: 2px dashed #f97316; border-radius: 8px; padding: 20px; margin: 20px 0; }
+//               .credential-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+//               .label { color: #666; font-size: 14px; }
+//               .value { font-weight: bold; color: #333; }
+//               .button { display: inline-block; padding: 12px 30px; background: #f97316; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: bold; }
+//               .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; font-size: 13px; }
+//             </style>
+//           </head>
+//           <body>
+//             <div class="container">
+//               <div class="header">
+//                 <h1>Welcome to Our Store!</h1>
+//                 <p>Your account has been created</p>
+//               </div>
+//               <div class="content">
+//                 <p>Hi <strong>${firstName}</strong>,</p>
+//                 <p>Your account has been automatically created when you placed your order. Here are your login credentials:</p>
+                
+//                 <div class="credentials">
+//                   <h3 style="margin-top: 0; color: #f97316;">Your Login Details</h3>
+//                   <div class="credential-item">
+//                     <span class="label">Email:</span>
+//                     <span class="value">${email}</span>
+//                   </div>
+//                   <div class="credential-item">
+//                     <span class="label">Password:</span>
+//                     <span class="value" style="color: #f97316; font-size: 18px; letter-spacing: 2px;">${password}</span>
+//                   </div>
+//                 </div>
+
+//                 <div class="warning">
+//                   ⚠️ <strong>Important:</strong> Please change your password after your first login for security.
+//                 </div>
+
+//                 <div style="text-align: center;">
+//                   <a href="${process.env.FRONTEND_URL}/login" class="button">Login to Your Account</a>
+//                 </div>
+
+//                 <p>With your account you can:</p>
+//                 <ul>
+//                   <li>Track your orders</li>
+//                   <li>View order history</li>
+//                   <li>Save items to wishlist</li>
+//                   <li>Faster checkout next time</li>
+//                 </ul>
+
+//                 <p>Best regards,<br><strong>${process.env.EMAIL_FROM_NAME} Team</strong></p>
+//               </div>
+//             </div>
+//           </body>
+//         </html>
+//       `,
+//     });
+//   } catch (error) {
+//     console.error("Welcome email error:", error);
+//   }
+// };

@@ -83,13 +83,6 @@ export const removeFromWishlist = async (req, res) => {
   }
 };
 
-// const getWishlistQuery = (req) => {
-//   if (req.user) return { user: req.user._id };
-//   if (req.sessionId) return { sessionId: req.sessionId };
-//   return null;
-// };
-
-
 export const getWishlist = async (req, res) => {
   try {
     const query = req.user
