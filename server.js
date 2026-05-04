@@ -63,7 +63,7 @@ connectDB();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://your-frontend.vercel.app"
+  "https://vercel.com/vivek-s-projects-18b5b197/ecommerce-frontend"
 ];
 
 app.use(cors({
