@@ -15,16 +15,14 @@ import authRoutes from "./routes/authRoutes.js";
 const app = express();
 connectDB();
 
-
 const allowedOrigins = [
   "http://localhost:3000",
   "https://ecommerce-frontend-u3zt.vercel.app"
 ];
 
-// ✅ Proper CORS setup
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow Postman, etc.
+    if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -38,7 +36,7 @@ app.use(cors({
 }));
 
 
-app.options("*", cors());
+// app.options("*", cors());
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
